@@ -1,0 +1,26 @@
+import heapq
+
+def shortest_path(graph, start, end):
+    queue = [(0, start, [])]
+    seen = set()
+    min_dist = float('inf')
+    while queue:
+        (cost, node, path) = heapq.heappop(queue)
+        if node not in seen:
+            seen.add(node)
+            path = path + [node]
+            if node == end:
+                min_dist = cost
+            else:
+                for c, neighbour in graph.get(node, []):
+                    heapq.heappush(queue, (cost + c, neighbour, path))
+    return min_dist, path
+
+
+graph = {'A': [(2, 'B'), (3, 'C')],
+         'B': [(1, 'C'), (3, 'D')],
+         'C': [(2, 'D')],
+         'D': [(2, 'E')],
+         'E': []}
+
+print("shortest_path is :(graph, 'A', 'D')")
