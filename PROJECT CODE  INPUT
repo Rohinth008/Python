@@ -2,31 +2,46 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 def find_shortest_path_and_draw(graph, start, end):
+    # Use Dijkstra's algorithm to find the shortest path
     path = nx.shortest_path(graph, source=start, target=end, weight='weight')
     
+    # Calculate the total weight of the path
     total_weight = nx.shortest_path_length(graph, source=start, target=end, weight='weight')
     
-    pos = nx.spring_layout(graph)  
+    # Convert the path to a string for display
+    path_in_words = ' -> '.join(path)
+
+    # Draw the graph
+    pos = nx.spring_layout(graph)  # Set the layout for better visualization
     nx.draw(graph, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=10, font_color='black', font_weight='bold', edge_color='gray', linewidths=1, font_family='sans-serif')
 
+    # Highlight the nodes in the shortest path
     path_edges = list(zip(path, path[1:]))
-    nx.draw_networkx_nodes(graph, pos, nodelist=path, node_color='green', node_size=700)
-    nx.draw_networkx_edges(graph, pos, edgelist=path_edges, edge_color='blue', width=2)
+    nx.draw_networkx_nodes(graph, pos, nodelist=path, node_color='orange', node_size=700)
+    nx.draw_networkx_edges(graph, pos, edgelist=path_edges, edge_color='green', width=2)
 
+    # Draw edge labels (weights)
     labels = nx.get_edge_attributes(graph, 'weight')
     nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels)
 
+    # Add output information as text inside the graph
     for node in graph.nodes:
         x, y = pos[node]
         plt.text(x, y, f"{node}\nDist: {nx.shortest_path_length(graph, source=start, target=node, weight='weight')}", ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7))
 
+    # Add total weight information at the top right in red
     plt.text(1, 1, f"Total weight: {total_weight}", ha='right', va='top', color='red', bbox=dict(facecolor='white', alpha=0.7), transform=plt.gca().transAxes)
 
+    # Add shortest path information at the top right in green
+    plt.text(1, 0.95, f"Shortest Path: {path_in_words}", ha='right', va='top', color='green', bbox=dict(facecolor='white', alpha=0.7), transform=plt.gca().transAxes)
+
+    # Show the plot
     plt.title(f"Shortest path from {start} to {end}")
     plt.show()
 
+# Example usage
 if __name__ == "__main__":
-   
+    # Create a sample graph
     G = nx.Graph()
     G.add_edge('A', 'B', weight=4)
     G.add_edge('A', 'C', weight=2)
@@ -35,7 +50,9 @@ if __name__ == "__main__":
     G.add_edge('C', 'D', weight=3)
     G.add_edge('D', 'E', weight=7)
     
+    # Specify the start and end nodes
     start_node = 'A'
     end_node = 'E'
     
+    # Find the shortest path, draw the graph, and print total weight
     find_shortest_path_and_draw(G, start_node, end_node)
