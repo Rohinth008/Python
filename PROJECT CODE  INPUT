@@ -6,20 +6,27 @@ def find_shortest_path_and_draw(graph, start, end):
     
     total_weight = nx.shortest_path_length(graph, source=start, target=end, weight='weight')
     
-    pos = nx.spring_layout(graph) 
+    pos = nx.spring_layout(graph)  
     nx.draw(graph, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=10, font_color='black', font_weight='bold', edge_color='gray', linewidths=1, font_family='sans-serif')
 
     path_edges = list(zip(path, path[1:]))
-    nx.draw_networkx_nodes(graph, pos, nodelist=path, node_color='orange', node_size=700)
-    nx.draw_networkx_edges(graph, pos, edgelist=path_edges, edge_color='orange', width=2)
+    nx.draw_networkx_nodes(graph, pos, nodelist=path, node_color='green', node_size=700)
+    nx.draw_networkx_edges(graph, pos, edgelist=path_edges, edge_color='blue', width=2)
 
     labels = nx.get_edge_attributes(graph, 'weight')
     nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels)
 
-    plt.title(f"Shortest path from {start} to {end}\nTotal weight: {total_weight}")
+    for node in graph.nodes:
+        x, y = pos[node]
+        plt.text(x, y, f"{node}\nDist: {nx.shortest_path_length(graph, source=start, target=node, weight='weight')}", ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7))
+
+    plt.text(1, 1, f"Total weight: {total_weight}", ha='right', va='top', color='red', bbox=dict(facecolor='white', alpha=0.7), transform=plt.gca().transAxes)
+
+    plt.title(f"Shortest path from {start} to {end}")
     plt.show()
 
 if __name__ == "__main__":
+   
     G = nx.Graph()
     G.add_edge('A', 'B', weight=4)
     G.add_edge('A', 'C', weight=2)
