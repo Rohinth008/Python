@@ -1,26 +1,34 @@
-import heapq
+import networkx as nx
+import matplotlib.pyplot as plt
 
-def shortest_path(graph, start, end):
-    queue = [(0, start, [])]
-    seen = set()
-    min_dist = float('inf')
-    while queue:
-        (cost, node, path) = heapq.heappop(queue)
-        if node not in seen:
-            seen.add(node)
-            path = path + [node]
-            if node == end:
-                min_dist = cost
-            else:
-                for c, neighbour in graph.get(node, []):
-                    heapq.heappush(queue, (cost + c, neighbour, path))
-    return min_dist, path
+def find_shortest_path_and_draw(graph, start, end):
+    path = nx.shortest_path(graph, source=start, target=end, weight='weight')
+    
+    total_weight = nx.shortest_path_length(graph, source=start, target=end, weight='weight')
+    
+    pos = nx.spring_layout(graph) 
+    nx.draw(graph, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=10, font_color='black', font_weight='bold', edge_color='gray', linewidths=1, font_family='sans-serif')
 
+    path_edges = list(zip(path, path[1:]))
+    nx.draw_networkx_nodes(graph, pos, nodelist=path, node_color='orange', node_size=700)
+    nx.draw_networkx_edges(graph, pos, edgelist=path_edges, edge_color='orange', width=2)
 
-graph = {'A': [(2, 'B'), (3, 'C')],
-         'B': [(1, 'C'), (3, 'D')],
-         'C': [(2, 'D')],
-         'D': [(2, 'E')],
-         'E': []}
+    labels = nx.get_edge_attributes(graph, 'weight')
+    nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels)
 
-print("shortest_path is :(graph, 'A', 'D')")
+    plt.title(f"Shortest path from {start} to {end}\nTotal weight: {total_weight}")
+    plt.show()
+
+if __name__ == "__main__":
+    G = nx.Graph()
+    G.add_edge('A', 'B', weight=4)
+    G.add_edge('A', 'C', weight=2)
+    G.add_edge('B', 'C', weight=5)
+    G.add_edge('B', 'D', weight=10)
+    G.add_edge('C', 'D', weight=3)
+    G.add_edge('D', 'E', weight=7)
+    
+    start_node = 'A'
+    end_node = 'E'
+    
+    find_shortest_path_and_draw(G, start_node, end_node)
